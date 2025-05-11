@@ -93,7 +93,7 @@ class ActionTradeStatisticsGetAPIView(APIView):
 
 class ActionCandlesGetAPIView(APIView):
 
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
     serializer_class = ActionCandlesResponseSerializer
 
     @extend_schema(
@@ -276,7 +276,7 @@ class ActionOrderBookGetAPIView(APIView):
 
 class ActionTradesGetAPIView(APIView):
 
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
     serializer_class = ActionTradesResponseSerializer
 
     @extend_schema(
