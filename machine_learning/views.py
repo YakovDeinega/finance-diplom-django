@@ -92,9 +92,9 @@ class MLPredictTickerAPIView(APIView):
         response_data = response_from_moex.json()['candles']
         parsed_data_from_moex = parse_start_structure(response_data)
         if datetime.datetime.strptime(parsed_data_from_moex[-1]['end'], '%Y-%m-%d %H:%M:%S').time().minute > 30:
-            start_index, end_index, predict_starting_with_next_hour = -21, None, True
+            start_index, end_index = -21, None
         else:
-            start_index, end_index, predict_starting_with_next_hour = -22, -1, False
+            start_index, end_index = -22, -1
         parsed_data_from_moex = parsed_data_from_moex[start_index:end_index]
 
         last_date_end = parsed_data_from_moex[-1]['end']
@@ -106,7 +106,7 @@ class MLPredictTickerAPIView(APIView):
         except HTTPError:
             return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Ошибка при запросе к ML API'})
 
-        result_data = set_appropriate_datetime(response_from_ml.json(), last_date_end, predict_starting_with_next_hour)
+        result_data = set_appropriate_datetime(response_from_ml.json(), last_date_end)
         Prediction.objects.create(
             model=MLModel.objects.get(id=1),
             asset=Asset.objects.get(ticker=ticker),
@@ -115,3 +115,51 @@ class MLPredictTickerAPIView(APIView):
             predicted_values=result_data,
         )
         return Response(status=status.HTTP_200_OK, data=self.serializer_class(result_data, many=True).data)
+
+
+class TestMLPredictTickerAPIView(APIView):
+
+    permission_classes = []
+    serializer_class = PredictActionCandlesResponseSerializer
+
+    # @method_decorator(cache_page(60 * 15))
+    def get(self, request, ticker, *args, **kwargs):
+        date_today = datetime.date.today()
+        interval = 60
+        response_from_moex = MOEXAPIService.get_candles_for_action(
+            ticker=ticker,
+            dt_from=str(date_today-datetime.timedelta(days=3)),
+            dt_till=str(date_today+datetime.timedelta(days=1)),
+            interval=interval,
+        )
+        try:
+            response_from_moex.raise_for_status()
+        except HTTPError:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Ошибка при запросе к MOEX API'})
+
+        response_data = response_from_moex.json()['candles']
+        parsed_data_from_moex = parse_start_structure(response_data)
+        if datetime.datetime.strptime(parsed_data_from_moex[-1]['end'], '%Y-%m-%d %H:%M:%S').time().minute > 30:
+            start_index, end_index = -21, None
+        else:
+            start_index, end_index = -22, -1
+        parsed_data_from_moex = parsed_data_from_moex[start_index:end_index]
+
+        last_date_end = parsed_data_from_moex[-1]['end']
+        request_data_to_ml = {'last_date_end': last_date_end, 'data': [data['close'] for data in parsed_data_from_moex]}
+
+        response_from_ml = MLAPIService.predict(ticker, request_data_to_ml)
+        try:
+            response_from_ml.raise_for_status()
+        except HTTPError:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'detail': 'Ошибка при запросе к ML API'})
+
+        result_data = set_appropriate_datetime(response_from_ml.json(), last_date_end)
+
+        final_result_data = [
+            {'begin': data['begin'], 'end': data['end'], 'close': data['close']}
+            for data in parsed_data_from_moex
+        ]
+        final_result_data.extend(result_data)
+
+        return Response(status=status.HTTP_200_OK, data=self.serializer_class(final_result_data, many=True).data)

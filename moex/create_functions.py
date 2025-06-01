@@ -75,13 +75,11 @@ def get_next_valid_start_time(current_datetime: datetime):
         current_datetime = current_datetime.replace(hour=0, minute=0, second=0) + datetime.timedelta(days=1)
 
 
-def set_appropriate_datetime(list_of_costs: list[float], last_date_end: str, predict_starting_with_next_hour: bool):
-    last_datetime_end = datetime.datetime.strptime(last_date_end, '%Y-%m-%d %H:%M:%S')
+def set_appropriate_datetime(list_of_costs: list[float], last_date_end: str):
 
-    if predict_starting_with_next_hour:
-        next_start_date = (last_datetime_end + datetime.timedelta(hours=1)).replace(minute=0, second=0)
-    else:
-        next_start_date = last_datetime_end.replace(minute=0, second=0)
+    next_start_date = (
+        datetime.datetime.strptime(last_date_end, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(hours=1)
+    ).replace(minute=0, second=0)
 
     next_start_date = get_next_valid_start_time(next_start_date)
     new_dates = []

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance-Diplom | Профиль</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Иконки (Heroicons) -->
+    <script src="https://unpkg.com/@heroicons/vue@2.0.11/dist/vue.min.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+    /* Анимации и дополнительные стили */
+    [data-aos] {
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    [data-aos="fade-up"] {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    [data-aos].aos-animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Профиль пользователя -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8" data-aos="fade-up">
+      <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
+        <!-- Аватар -->
+        <div class="relative group">
+          <img id="avatar-preview" src="{{ user.userinformation.avatar.url }}"
+               class="w-32 h-32 rounded-full object-cover border-2 border-gray-200">
+          <label for="avatar-upload" class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+            <span class="text-white text-sm font-medium">Изменить</span>
+          </label>
+          <input id="avatar-upload" type="file" accept="image/*" class="hidden">
+        </div>
+
+        <!-- Информация -->
+        <div class="flex-1">
+          <h1 class="text-2xl font-bold text-gray-800">{{ user.username }}</h1>
+          <div class="mt-4 space-y-2">
+            <div class="flex items-center">
+              <span class="text-gray-600 w-32">Email:</span>
+              <span class="font-medium">{{ user.email }}</span>
+              {% if not user.userinformation.email_confirmed %}
+                <button id="confirm-email" class="ml-2 px-3 py-1 bg-blue-100 text-blue-600 rounded text-sm">Подтвердить</button>
+              {% endif %}
+            </div>
+            <div class="flex items-center">
+              <span class="text-gray-600 w-32">Телефон:</span>
+              <input id="phone-input" type="text" value="{{ user.userinformation.phone }}"
+                     class="border-b border-gray-300 focus:border-blue-500 outline-none px-1 py-1">
+              <button id="save-phone" class="ml-2 px-3 py-1 bg-gray-100 text-gray-600 rounded text-sm hidden">Сохранить</button>
+            </div>
+            <div class="flex items-center">
+              <span class="text-gray-600 w-32">Баланс:</span>
+              <span class="font-medium">{{ user.userinformation.balance }} ₽</span>
+              <button id="add-balance" class="ml-2 px-3 py-1 bg-green-100 text-green-600 rounded text-sm">Пополнить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Портфели -->
+    <div class="bg-white rounded-lg shadow-md p-6" data-aos="fade-up">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold text-gray-800">Мои портфели</h2>
+        <button id="add-portfolio" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+          + Добавить портфель
+        </button>
+      </div>
+
+      <!-- Список портфелей -->
+      <div class="space-y-4">
+        {% for portfolio in user.portfolio_set.all %}
+          <div class="border rounded-lg overflow-hidden" data-portfolio-id="{{ portfolio.id }}">
+            <!-- Заголовок портфеля -->
+            <div class="bg-gray-50 px-4 py-3 flex justify-between items-center border-b">
+              <div class="flex items-center">
+                <h3 class="font-medium">{{ portfolio.name }}</h3>
+                {% if portfolio.is_main %}
+                  <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs">Основной</span>
+                {% endif %}
+              </div>
+              <div class="flex space-x-2">
+                {% if not portfolio.is_main %}
+                  <button class="set-main-portfolio px-3 py-1 bg-gray-100 text-gray-600 rounded text-sm">Сделать основным</button>
+                {% endif %}
+                <button class="edit-portfolio px-3 py-1 bg-gray-100 text-gray-600 rounded text-sm">Изменить</button>
+                <button class="delete-portfolio px-3 py-1 bg-red-100 text-red-600 rounded text-sm">Удалить</button>
+              </div>
+            </div>
+
+            <!-- Активы портфеля -->
+            <div class="divide-y">
+              {% for asset in portfolio.portfolioasset_set.all %}
+                <div class="px-4 py-3 flex justify-between items-center" data-asset-id="{{ asset.id }}">
+                  <div class="flex-1">
+                    <div class="font-medium">{{ asset.asset.name }} ({{ asset.asset.ticker }})</div>
+                    <div class="text-sm text-gray-500">{{ asset.asset.type }}</div>
+                  </div>
+                  <div class="flex items-center space-x-4">
+                    <div class="w-24 text-right">
+                      <input type="number" value="{{ asset.quantity }}"
+                             class="asset-quantity border-b border-gray-300 focus:border-blue-500 outline-none px-1 py-1 w-full text-right">
+                    </div>
+                    <button class="save-asset px-3 py-1 bg-blue-100 text-blue-600 rounded text-sm hidden">Сохранить</button>
+                    <button class="delete-asset px-3 py-1 bg-red-100 text-red-600 rounded text-sm">Удалить</button>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="px-4 py-6 text-center text-gray-500">
+                  В этом портфеле пока нет активов
+                </div>
+              {% endfor %}
+
+              <!-- Добавление нового актива -->
+              <div class="px-4 py-3 border-t">
+                <div class="flex items-center space-x-4">
+                  <select class="add-asset-select flex-1 border rounded px-3 py-2">
+                    <option value="">Выберите актив</option>
+                    {% for asset in all_assets %}
+                      <option value="{{ asset.id }}">{{ asset.name }} ({{ asset.ticker }})</option>
+                    {% endfor %}
+                  </select>
+                  <input type="number" placeholder="Кол-во" class="add-asset-quantity w-24 border rounded px-3 py-2">
+                  <button class="add-asset px-4 py-2 bg-green-600 text-white rounded">Добавить</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text-center py-8 text-gray-500">
+            У вас пока нет ни одного портфеля
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно для добавления портфеля -->
+  <div id="portfolio-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h3 class="text-lg font-medium mb-4">Новый портфель</h3>
+      <input type="text" id="new-portfolio-name" placeholder="Название портфеля" class="w-full border rounded px-3 py-2 mb-4">
+      <div class="flex justify-end space-x-3">
+        <button id="cancel-portfolio" class="px-4 py-2 bg-gray-200 rounded">Отмена</button>
+        <button id="save-portfolio" class="px-4 py-2 bg-blue-600 text-white rounded">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно пополнения баланса -->
+  <div id="balance-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+      <h3 class="text-lg font-medium mb-4">Пополнение баланса</h3>
+      <input type="number" id="add-balance-amount" placeholder="Сумма (₽)" class="w-full border rounded px-3 py-2 mb-4">
+      <div class="flex justify-end space-x-3">
+        <button id="cancel-balance" class="px-4 py-2 bg-gray-200 rounded">Отмена</button>
+        <button id="confirm-balance" class="px-4 py-2 bg-green-600 text-white rounded">Пополнить</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // CSRF токен для AJAX-запросов
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Общие настройки для fetch
+    const fetchConfig = (method, data) => ({
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify(data)
+    });
+
+    // Редактирование телефона
+    const phoneInput = document.getElementById('phone-input');
+    const savePhoneBtn = document.getElementById('save-phone');
+
+    phoneInput.addEventListener('input', () => {
+      savePhoneBtn.classList.remove('hidden');
+    });
+
+    savePhoneBtn.addEventListener('click', async () => {
+      const response = await fetch('/api/update_phone/', fetchConfig('POST', {
+        phone: phoneInput.value
+      }));
+
+      if (response.ok) {
+        savePhoneBtn.classList.add('hidden');
+        showToast('Телефон успешно обновлен');
+      }
+    });
+
+    // Загрузка аватара
+    document.getElementById('avatar-upload').addEventListener('change', async function(e) {
+      const formData = new FormData();
+      formData.append('avatar', e.target.files[0]);
+
+      const response = await fetch('/api/update_avatar/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('avatar-preview').src = data.avatar_url;
+        showToast('Аватар успешно обновлен');
+      }
+    });
+
+    // Управление портфелями
+    document.getElementById('add-portfolio').addEventListener('click', () => {
+      document.getElementById('portfolio-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-portfolio').addEventListener('click', () => {
+      document.getElementById('portfolio-modal').classList.add('hidden');
+    });
+
+    document.getElementById('save-portfolio').addEventListener('click', async () => {
+      const name = document.getElementById('new-portfolio-name').value;
+      if (!name) return;
+
+      const response = await fetch('/api/portfolios/', fetchConfig('POST', { name }));
+
+      if (response.ok) {
+        location.reload();
+      }
+    });
+
+    // Управление балансом
+    document.getElementById('add-balance').addEventListener('click', () => {
+      document.getElementById('balance-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('cancel-balance').addEventListener('click', () => {
+      document.getElementById('balance-modal').classList.add('hidden');
+    });
+
+    document.getElementById('confirm-balance').addEventListener('click', async () => {
+      const amount = parseFloat(document.getElementById('add-balance-amount').value);
+      if (isNaN(amount) || amount <= 0) return;
+
+      const response = await fetch('/api/add_balance/', fetchConfig('POST', { amount }));
+
+      if (response.ok) {
+        location.reload();
+      }
+    });
+
+    // Вспомогательная функция для уведомлений
+    function showToast(message) {
+      // Реализация toast-уведомлений
+      console.log(message); // Замените на реальную реализацию
+    }
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,508 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance-Diplom | Данные и прогнозирование акций</title>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Иконки (Heroicons) -->
+    <script src="https://unpkg.com/@heroicons/vue@2.0.11/dist/vue.min.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-800">
+    <!-- Шапка с навигацией -->
+    <header class="sticky top-0 bg-white shadow-sm z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-6 h-16 items-center">
+            <div class="col-span-1 flex justify-start">
+                <span class="text-xl font-bold text-blue-600">Finance<span class="text-orange-500">Diplom</span></span>
+            </div>
+            <div class="hidden md:flex col-span-4 justify-center items-center space-x-8">
+                <a href="#features" class="text-gray-600 hover:text-blue-600">Возможности</a>
+                <a href="#integration" class="text-gray-600 hover:text-blue-600">Интеграция</a>
+                <a href="#test_prediction" class="text-gray-600 hover:text-blue-600">Прогнозирование</a>
+            </div>
+            <div class="col-span-5 md:col-span-1 flex justify-end items-center">
+                {% if user.is_authenticated %}
+                    <a href="" class="ml-4 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
+                        Профиль
+                    </a>
+                {% else %}
+                    <a href="#integration" class="ml-4 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
+                        Регистрация
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+    <!-- Hero-секция -->
+    <section class="gradient-bg text-white py-20 md:py-32" data-aos="fade-up" data-aos-delay="100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Доступ к реальным данным Московской Биржи и прогнозирование котировок акций</h1>
+            <p class="text-xl md:text-2xl opacity-90 mb-10 max-w-3xl mx-auto">
+                Готовый бесплатный API для интеграции с клиентскими Web- и Mobile- приложениями
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#integration" class="px-8 py-3 bg-orange-500 hover:bg-orange-600 rounded-md font-semibold text-white transition-colors transition-transform hover:-translate-y-1">
+                    Попробовать
+                </a>
+                <a href="/api/docs" class="px-8 py-3 bg-transparent border-2 border-white hover:bg-white hover:text-blue-800 rounded-md font-semibold transition-colors transition-transform hover:-translate-y-1">
+                    Документация
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Блок "Возможности" -->
+    <section id="features" class="py-20 bg-white" data-aos="fade-up" data-aos-delay="100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Возможности сервиса</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <div class="text-blue-600 mb-4">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Получение данных с Московской Биржи</h3>
+                    <p class="text-gray-600">Узнавайте данные по акциям в режиме реального времени.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <div class="text-blue-600 mb-4">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">AI-прогнозирование</h3>
+                    <p class="text-gray-600">Прогнозируйте цены акций с помощью современных ML-моделей, которые постоянно улучшаются.</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <div class="text-blue-600 mb-4">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Простая интеграция</h3>
+                    <p class="text-gray-600">Подключите клиентское приложение к нашему сервису благодаря современному и высокопроизводительному RESTful API.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="test_prediction" class="py-16 bg-gray-50" data-aos="fade-up">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-center mb-12">Прогнозирование цен</h2>
+
+        <!-- Выбор акции -->
+        <div class="max-w-md mx-auto mb-8">
+          <label class="block text-gray-700 mb-2">Выберите акцию:</label>
+          <select id="stock-select" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <option value="SBER">SBER</option>
+            <option value="GAZP">GAZP</option>
+            <option value="TATN">TATN</option>
+            <option value="NVTK">NVTK</option>
+          </select>
+        </div>
+
+        <!-- Кнопка прогнозирования -->
+        <div class="text-center mb-8">
+          <button id="forecast-btn" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Спрогнозировать
+          </button>
+        </div>
+
+        <!-- Блок скелетона -->
+        <div id="skeleton-loader" class="hidden animate-pulse max-w-4xl mx-auto">
+          <div class="h-8 bg-gray-200 rounded mb-2"></div>
+          <div class="h-96 bg-gray-200 rounded"></div>
+        </div>
+
+        <!-- Контейнер для графика с фиксированным соотношением сторон -->
+        <div class="max-w-4xl mx-auto relative" style="height: 400px">
+          <canvas id="forecast-chart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Секция Интеграции -->
+<section id="integration" class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Интеграция с API</h2>
+
+    <!-- Шаг 1: Регистрация -->
+    <div class="grid md:grid-cols-2 gap-8 items-center mb-16" data-aos="fade-up">
+      <div>
+        <div class="flex items-center mb-4">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold mr-3">1</div>
+          <h3 class="text-xl font-semibold">Регистрация</h3>
+        </div>
+        <p class="text-gray-600 mb-4">
+          Введите имя пользователя и пароль и зарегистрируйтесь в системе.
+        </p>
+        <ul class="list-disc pl-5 text-gray-600 space-y-1">
+          <li>Минимальная длина пароля - 8 символов</li>
+          <li>Логин должен быть уникальным</li>
+        </ul>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200" id="formContainer">
+        <h4 class="font-medium mb-4 text-center">Форма регистрации</h4>
+        <form class="space-y-4" action="/register/" method="post" id="registrationForm">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Имя пользователя</label>
+            <input type="text" id="username" name="username" pattern="^[a-zA-Z0-9_]+$" title="Только латинские буквы, цифры и подчеркивание" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
+            <input type="password" id="password" name="password" minlength="8" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Зарегистрироваться
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Шаг 2: Получение токена -->
+    <div class="grid md:grid-cols-2 gap-8 items-center mb-16" data-aos="fade-up">
+      <div>
+        <div class="flex items-center mb-4">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold mr-3">2</div>
+          <h3 class="text-xl font-semibold">Получение JWT-токена</h3>
+        </div>
+        <p class="text-gray-600 mb-4">
+          Запросите токен доступа к API, отправив свои учетные данные на URL
+            <code class="bg-gray-100 px-1 py-0.5 rounded">https://finance-diplom.ru/token/</code>.
+        </p>
+        <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
+          <pre class="text-sm overflow-x-auto">
+              <code>POST /api/auth/token/
+                curl -X 'POST' \
+                  'https://finance-diplom.ru/token/' \
+                  -H 'accept: application/json' \
+                  -H 'Content-Type: application/json' \
+                  -d '{
+                  "username": "username",
+                  "password": "password"
+                }'</code></pre>
+        </div>
+        <p class="text-gray-600 mt-4">
+          Токен будет активен в течение 15 минут. По истечении времени обновите его через
+            <a href="api/docs/#/client/client_token_refresh_create" class="text-blue-600 hover:underline">данный метод.</a>
+        </p>
+      </div>
+      <div class="bg-gray-100 rounded-lg overflow-hidden" style="height: 300px;">
+        <!-- Область для скриншота Swagger -->
+        <img src="{% static 'images/swagger-step2.jpg' %}" alt="Получение JWT-токена" class="w-full h-full object-cover">
+      </div>
+    </div>
+
+    <!-- Шаг 3: Использование API -->
+    <div class="grid md:grid-cols-2 gap-8 items-center" data-aos="fade-up">
+      <div>
+        <div class="flex items-center mb-4">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold mr-3">3</div>
+          <h3 class="text-xl font-semibold">Использование API</h3>
+        </div>
+        <p class="text-gray-600 mb-4">
+          Все методы API доступны после регистрации. Добавьте токен в заголовок запроса:
+        </p>
+        <div class="bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+          <pre class="text-sm overflow-x-auto"><code>Authorization: Bearer ваш_jwt_токен</code></pre>
+        </div>
+        <p class="text-gray-600">
+          Полную документацию по API вы можете просмотреть <a href="/api/docs/" class="text-blue-600 hover:underline">здесь</a>.
+        </p>
+      </div>
+      <div class="bg-gray-100 rounded-lg overflow-hidden" style="height: 300px;">
+        <!-- Область для скриншота Swagger -->
+        <div class="h-full flex items-center justify-center text-gray-400">
+          <img src="{% static 'images/swagger-step3.jpg' %}" alt="Использование API" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- Футер -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Finance-Diplom</h3>
+                    <p class="text-gray-400">Бесплатный доступ к данным Московской Биржи и прогнозированию акций.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Навигация</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-white">Возможности</a></li>
+                        <li><a href="#integration" class="text-gray-400 hover:text-white">Интеграция</a></li>
+                        <li><a href="#test_prediction" class="text-gray-400 hover:text-white">Прогнозирование котировок</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Документация</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/api/docs" class="text-gray-400 hover:text-white">API Reference</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Примеры кода</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Контакты</h4>
+                    <ul class="space-y-2">
+                        <li class="text-gray-400"><a href="mailto:yakovdeinega@gmail.com">Почта</a></li>
+                        <li><a href="https://github.com/YakovDeinega/finance-diplom-django" class="text-gray-400 hover:text-white">GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2025 Finance-Diplom. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+<script>
+  AOS.init({
+    duration: 800,
+  });
+    // Элементы DOM
+  const forecastBtn = document.getElementById('forecast-btn');
+  const stockSelect = document.getElementById('stock-select');
+  const skeletonLoader = document.getElementById('skeleton-loader');
+  const chartCanvas = document.getElementById('forecast-chart');
+
+  // Переменные для графика
+  let forecastChart = null;
+
+  // Обработчик кнопки
+  forecastBtn.addEventListener('click', async () => {
+    const selectedStock = stockSelect.value;
+
+    // Скрываем старый график
+    if (forecastChart) {
+      forecastChart.destroy();
+      forecastChart = null;
+    }
+
+    // Показываем скелетон
+    skeletonLoader.classList.remove('hidden');
+
+    try {
+      // Реальный запрос к вашему API
+      const response = await fetchForecast(selectedStock);
+
+      // Строим график
+      renderChart(response);
+
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Произошла ошибка при прогнозировании');
+    } finally {
+      skeletonLoader.classList.add('hidden');
+    }
+  });
+
+  // Реальная функция запроса к API
+  async function fetchForecast(ticker) {
+    const response = await fetch(`/api/moex/test_predict/${ticker}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  }
+
+  // Рендер графика с разделением на фактические и прогнозируемые значения
+  function renderChart(apiData) {
+    const ctx = chartCanvas.getContext('2d');
+
+    // Разделяем данные на фактические (первые 20) и прогнозируемые (последние 20)
+    const actualData = apiData.slice(0, 21);
+    const predictedData = apiData.slice(21, 42);
+
+    // Подготавливаем данные для графика
+    const labels = [
+      ...actualData.map(item => item.end),
+      ...predictedData.map(item => item.end)
+    ];
+
+    const actualPrices = actualData.map(item => item.close);
+    const predictedPrices = [
+      ...Array(21).fill(null), // Пустые значения для фактического периода
+      ...predictedData.map(item => item.close)
+    ];
+
+    // Создаем новый график
+    forecastChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Фактические данные',
+            data: actualPrices,
+            borderColor: '#3b82f6', // Синий
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 2
+          },
+          {
+            label: 'Прогноз',
+            data: predictedPrices,
+            borderColor: '#f97316', // Оранжевый
+            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+            tension: 0.4,
+            borderWidth: 3,
+            borderDash: [5, 3], // Пунктирная линия
+            pointRadius: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: false,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            },
+            title: {
+              display: true,
+              text: 'Цена закрытия (руб)'
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              maxRotation: 45,
+              minRotation: 45
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return `${context.dataset.label}: ${context.raw?.toFixed(2) || 'N/A'} руб`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      forecastChart.resize();
+    });
+  }
+const originalFormHtml = document.getElementById('formContainer').innerHTML;
+
+function restoreForm() {
+  const formContainer = document.getElementById('formContainer');
+  formContainer.innerHTML = originalFormHtml;
+  document.getElementById('registrationForm').addEventListener('submit', handleSubmit);
+}
+
+async function handleSubmit(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formContainer = document.getElementById('formContainer');
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  if (!form.checkValidity()) {
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.innerHTML = 'Отправка...';
+
+  try {
+    const formData = {
+      username: form.username.value,
+      password: form.password.value
+    };
+
+    const response = await fetch('/register/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+
+    let result;
+    try {
+      result = await response.json();
+    } catch {
+      result = { message: response.statusText };
+    }
+
+    const isSuccess = response.ok && result.status === 'success';
+    showResultBlock(
+      isSuccess,
+      isSuccess ? result.message : (result.message || 'Ошибка регистрации')
+    );
+
+    if (isSuccess) {
+      form.reset();
+    }
+
+  } catch (error) {
+    showResultBlock(false, 'Ошибка соединения с сервером');
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = 'Зарегистрироваться';
+  }
+}
+
+function showResultBlock(isSuccess, message) {
+  const formContainer = document.getElementById('formContainer');
+
+  formContainer.innerHTML = `
+    <div class="space-y-4 h-full flex flex-col items-center justify-center p-8 text-center">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center ${
+        isSuccess ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+      }">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          ${
+            isSuccess
+              ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />'
+              : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />'
+          }
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium ${
+        isSuccess ? 'text-green-800' : 'text-red-800'
+      }">${message}</h3>
+    </div>
+  `;
+
+  setTimeout(restoreForm, 3000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('registrationForm').addEventListener('submit', handleSubmit);
+});
+
+</script>
+</body>
+</html>

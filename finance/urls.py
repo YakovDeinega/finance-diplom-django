@@ -19,9 +19,9 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
+    path('', include('client.urls')),
     path('admin/', admin.site.urls),
     path('api/moex/', include('moex.urls')),
-    path('api/client/', include('client.urls')),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='docs'),
 ]
