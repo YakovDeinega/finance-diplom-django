@@ -173,38 +173,39 @@
     </div>
 
     <!-- Шаг 2: Получение токена -->
-    <div class="grid md:grid-cols-2 gap-8 items-center mb-16" data-aos="fade-up">
-      <div>
-        <div class="flex items-center mb-4">
-          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold mr-3">2</div>
-          <h3 class="text-xl font-semibold">Получение JWT-токена</h3>
-        </div>
-        <p class="text-gray-600 mb-4">
-          Запросите токен доступа к API, отправив свои учетные данные на URL
-            <code class="bg-gray-100 px-1 py-0.5 rounded">https://finance-diplom.ru/token/</code>.
-        </p>
-        <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
-          <pre class="text-sm overflow-x-auto">
-              <code>POST /api/auth/token/
-                curl -X 'POST' \
-                  'https://finance-diplom.ru/token/' \
-                  -H 'accept: application/json' \
-                  -H 'Content-Type: application/json' \
-                  -d '{
-                  "username": "username",
-                  "password": "password"
-                }'</code></pre>
-        </div>
-        <p class="text-gray-600 mt-4">
-          Токен будет активен в течение 15 минут. По истечении времени обновите его через
-            <a href="api/docs/#/client/client_token_refresh_create" class="text-blue-600 hover:underline">данный метод.</a>
-        </p>
-      </div>
-      <div class="bg-gray-100 rounded-lg overflow-hidden" style="height: 300px;">
-        <!-- Область для скриншота Swagger -->
-        <img src="{% static 'images/swagger-step2.jpg' %}" alt="Получение JWT-токена" class="w-full h-full object-cover">
-      </div>
+    <!-- Шаг 2: Получение токена -->
+<div class="grid md:grid-cols-2 gap-8 items-center mb-16" data-aos="fade-up">
+  <div>
+    <div class="flex items-center mb-4">
+      <div class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold mr-3">2</div>
+      <h3 class="text-xl font-semibold">Получение JWT-токена</h3>
     </div>
+    <p class="text-gray-600 mb-4">
+      Запросите токен доступа к API, отправив свои учетные данные на URL
+        <code class="bg-gray-100 px-1 py-0.5 rounded">https://finance-diplom.ru/token/</code>.
+    </p>
+    <div class="bg-gray-50 p-4 rounded-md border border-gray-200 overflow-x-auto">
+      <pre class="text-sm whitespace-pre-wrap md:whitespace-pre">
+        <code>POST /api/auth/token/
+curl -X 'POST' \
+  'https://finance-diplom.ru/token/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "username": "username",
+    "password": "password"
+  }'</code>
+      </pre>
+    </div>
+    <p class="text-gray-600 mt-4">
+      Токен будет активен в течение 15 минут. По истечении времени обновите его через
+        <a href="api/docs/#/client/client_token_refresh_create" class="text-blue-600 hover:underline">данный метод.</a>
+    </p>
+  </div>
+  <div class="bg-gray-100 rounded-lg overflow-hidden" style="height: 300px;">
+    <img src="{% static 'images/swagger-step2.jpg' %}" alt="Получение JWT-токена" class="w-full h-full object-cover">
+  </div>
+</div>
 
     <!-- Шаг 3: Использование API -->
     <div class="grid md:grid-cols-2 gap-8 items-center" data-aos="fade-up">
