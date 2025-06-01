@@ -37,6 +37,5 @@ class Prediction(AutoDateMixin):
     metrics = models.JSONField(default=dict, verbose_name='Метрики')
 
     class Meta:
-        unique_together = ['model', 'asset', 'last_prediction_date', 'interval_of_predictions']
         verbose_name = 'Предсказание'
         verbose_name_plural = 'Предсказания'

@@ -80,8 +80,8 @@ class MLPredictTickerAPIView(APIView):
         interval = 60
         response_from_moex = MOEXAPIService.get_candles_for_action(
             ticker=ticker,
-            dt_from=str(date_today-datetime.timedelta(days=7)),
-            dt_till=str(date_today+datetime.timedelta(days=-3)),
+            dt_from=str(date_today-datetime.timedelta(days=3)),
+            dt_till=str(date_today+datetime.timedelta(days=1)),
             interval=interval,
         )
         try:
