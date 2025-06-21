@@ -122,7 +122,7 @@ class TestMLPredictTickerAPIView(APIView):
     permission_classes = []
     serializer_class = PredictActionCandlesResponseSerializer
 
-    # @method_decorator(cache_page(60 * 15))
+    @method_decorator(cache_page(60 * 15))
     def get(self, request, ticker, *args, **kwargs):
         date_today = datetime.date.today()
         interval = 60
