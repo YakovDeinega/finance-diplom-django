@@ -1,6 +1,6 @@
 import datetime
 
-HOLIDAY_DAYS = ['2025-05-09', '2025-06-12', '2025-11-04', '2025-12-31']
+HOLIDAY_DAYS = ['2025-05-09', '2025-06-12', '2025-06-21', '2025-06-22', '2025-11-04', '2025-12-31']
 
 MIN_START_TIME_FOR_WORKING_DAY = datetime.time(hour=6)
 MAX_END_TIME_FOR_WORKING_DAY = datetime.time(hour=23, minute=59, second=59)
